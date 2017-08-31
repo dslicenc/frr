@@ -5975,7 +5975,7 @@ ALIAS_HIDDEN(no_neighbor_addpath_tx_bestpath_per_as,
 
 DEFUN_NOSH (address_family_ipv4_safi,
        address_family_ipv4_safi_cmd,
-       "address-family ipv4 [<unicast|multicast|vpn|labeled-unicast>]",
+       "address-family ipv4 [" BGP_SAFI_WITH_LABEL_CMD_STR "]",
        "Enter Address Family command mode\n"
        "Address Family\n"
        BGP_SAFI_WITH_LABEL_HELP_STR)
@@ -5992,7 +5992,7 @@ DEFUN_NOSH (address_family_ipv4_safi,
 
 DEFUN_NOSH (address_family_ipv6_safi,
        address_family_ipv6_safi_cmd,
-       "address-family ipv6 [<unicast|multicast|vpn|labeled-unicast>]",
+       "address-family ipv6 [" BGP_SAFI_WITH_LABEL_CMD_STR "]",
        "Enter Address Family command mode\n"
        "Address Family\n"
        BGP_SAFI_WITH_LABEL_HELP_STR)
