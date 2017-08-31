@@ -977,8 +977,8 @@ struct route_map_rule_cmd route_match_ecommunity_cmd = {
 	"extcommunity", route_match_ecommunity, route_match_ecommunity_compile,
 	route_match_ecommunity_free};
 
-/* `match nlri` and `set nlri` are replaced by `address-family ipv4`
-   and `address-family vpnv4'.  */
+/* `match nlri` and `set nlri` are replaced by `address-family ipv4 unicast`,
+   `address-family ipv4 vpn`, etc.  */
 
 /* `match origin' */
 static route_map_result_t route_match_origin(void *rule, struct prefix *prefix,
@@ -4293,70 +4293,6 @@ DEFUN (no_set_ipv6_nexthop_global,
 				  "ipv6 next-hop global", argv[idx_ipv6]->arg);
 }
 
-#ifdef KEEP_OLD_VPN_COMMANDS
-DEFUN (set_vpn_nexthop,
-       set_vpn_nexthop_cmd,
-       "set <vpnv4 next-hop A.B.C.D|vpnv6 next-hop X:X::X:X>",
-       SET_STR
-       "VPNv4 information\n"
-       "VPN next-hop address\n"
-       "IP address of next hop\n"
-       "VPNv6 information\n"
-       "VPN next-hop address\n"
-       "IPv6 address of next hop\n")
-{
-	int idx_ip = 3;
-	afi_t afi;
-	int idx = 0;
-
-	if (argv_find_and_parse_vpnvx(argv, argc, &idx, &afi)) {
-		if (afi == AFI_IP)
-			return generic_set_add(
-				vty, VTY_GET_CONTEXT(route_map_index),
-				"ipv4 vpn next-hop", argv[idx_ip]->arg);
-		else
-			return generic_set_add(
-				vty, VTY_GET_CONTEXT(route_map_index),
-				"ipv6 vpn next-hop", argv[idx_ip]->arg);
-	}
-	return CMD_SUCCESS;
-}
-
-DEFUN (no_set_vpn_nexthop,
-       no_set_vpn_nexthop_cmd,
-       "no set <vpnv4 next-hop A.B.C.D|vpnv6 next-hop X:X::X:X>",
-       NO_STR
-       SET_STR
-       "VPNv4 information\n"
-       "VPN next-hop address\n"
-       "IP address of next hop\n"
-       "VPNv6 information\n"
-       "VPN next-hop address\n"
-       "IPv6 address of next hop\n")
-{
-	int idx_ip = 4;
-	char *arg;
-	afi_t afi;
-	int idx = 0;
-
-	if (argc <= idx_ip)
-		arg = NULL;
-	else
-		arg = argv[idx_ip]->arg;
-	if (argv_find_and_parse_vpnvx(argv, argc, &idx, &afi)) {
-		if (afi == AFI_IP)
-			return generic_set_delete(
-				vty, VTY_GET_CONTEXT(route_map_index),
-				"ipv4 vpn next-hop", arg);
-		else
-			return generic_set_delete(
-				vty, VTY_GET_CONTEXT(route_map_index),
-				"ipv6 vpn next-hop", argv[idx_ip]->arg);
-	}
-	return CMD_SUCCESS;
-}
-#endif /* KEEP_OLD_VPN_COMMANDS */
-
 DEFUN (set_ipx_vpn_nexthop,
        set_ipx_vpn_nexthop_cmd,
        "set <ipv4|ipv6> vpn next-hop <A.B.C.D|X:X::X:X>",
@@ -4601,10 +4537,6 @@ void bgp_route_map_init(void)
 	install_element(RMAP_NODE, &no_set_ecommunity_rt_cmd);
 	install_element(RMAP_NODE, &set_ecommunity_soo_cmd);
 	install_element(RMAP_NODE, &no_set_ecommunity_soo_cmd);
-#ifdef KEEP_OLD_VPN_COMMANDS
-	install_element(RMAP_NODE, &set_vpn_nexthop_cmd);
-	install_element(RMAP_NODE, &no_set_vpn_nexthop_cmd);
-#endif /* KEEP_OLD_VPN_COMMANDS */
 	install_element(RMAP_NODE, &set_ipx_vpn_nexthop_cmd);
 	install_element(RMAP_NODE, &no_set_ipx_vpn_nexthop_cmd);
 	install_element(RMAP_NODE, &set_originator_id_cmd);

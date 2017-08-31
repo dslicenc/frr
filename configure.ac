@@ -538,13 +538,6 @@ if test "$enable_protobuf" = "yes"; then
    fi
 fi
 
-#
-# Logic for old vpn commans support.
-#
-if test "$enable_oldvpn_commands" = "yes"; then
-   AC_DEFINE(KEEP_OLD_VPN_COMMANDS,, [Define for compiling with old vpn commands])
-fi
-
 # Fail if the user explicity enabled protobuf support and we couldn't
 # find the compiler or libraries.
 if test "x$have_protobuf" = "xno" && test "x$enable_protobuf" = "xyes"; then

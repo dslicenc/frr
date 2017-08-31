@@ -9833,67 +9833,6 @@ DEFUN (show_ip_bgp_instance_neighbor_prefix_counts,
 	return bgp_peer_counts(vty, peer, AFI_IP, SAFI_UNICAST, uj);
 }
 
-#ifdef KEEP_OLD_VPN_COMMANDS
-DEFUN (show_ip_bgp_vpn_neighbor_prefix_counts,
-       show_ip_bgp_vpn_neighbor_prefix_counts_cmd,
-       "show [ip] bgp <vpnv4|vpnv6> all neighbors <A.B.C.D|X:X::X:X|WORD> prefix-counts [json]",
-       SHOW_STR
-       IP_STR
-       BGP_STR
-       BGP_VPNVX_HELP_STR
-       "Display information about all VPNv4 NLRIs\n"
-       "Detailed information on TCP and BGP neighbor connections\n"
-       "Neighbor to display information about\n"
-       "Neighbor to display information about\n"
-       "Neighbor on BGP configured interface\n"
-       "Display detailed prefix count information\n"
-       JSON_STR)
-{
-	int idx_peer = 6;
-	struct peer *peer;
-	u_char uj = use_json(argc, argv);
-
-	peer = peer_lookup_in_view(vty, NULL, argv[idx_peer]->arg, uj);
-	if (!peer)
-		return CMD_WARNING;
-
-	return bgp_peer_counts(vty, peer, AFI_IP, SAFI_MPLS_VPN, uj);
-}
-
-DEFUN (show_ip_bgp_vpn_all_route_prefix,
-       show_ip_bgp_vpn_all_route_prefix_cmd,
-       "show [ip] bgp <vpnv4|vpnv6> all <A.B.C.D|A.B.C.D/M> [json]",
-       SHOW_STR
-       IP_STR
-       BGP_STR
-       BGP_VPNVX_HELP_STR
-       "Display information about all VPNv4 NLRIs\n"
-       "Network in the BGP routing table to display\n"
-       "Network in the BGP routing table to display\n"
-       JSON_STR)
-{
-	int idx = 0;
-	char *network = NULL;
-	struct bgp *bgp = bgp_get_default();
-	if (!bgp) {
-		vty_out(vty, "Can't find default instance\n");
-		return CMD_WARNING;
-	}
-
-	if (argv_find(argv, argc, "A.B.C.D", &idx))
-		network = argv[idx]->arg;
-	else if (argv_find(argv, argc, "A.B.C.D/M", &idx))
-		network = argv[idx]->arg;
-	else {
-		vty_out(vty, "Unable to figure out Network\n");
-		return CMD_WARNING;
-	}
-
-	return bgp_show_route(vty, bgp, network, AFI_IP, SAFI_MPLS_VPN, NULL, 0,
-			      BGP_PATH_ALL, use_json(argc, argv));
-}
-#endif /* KEEP_OLD_VPN_COMMANDS */
-
 DEFUN (show_ip_bgp_l2vpn_evpn_all_route_prefix,
        show_ip_bgp_l2vpn_evpn_all_route_prefix_cmd,
        "show [ip] bgp l2vpn evpn all <A.B.C.D|A.B.C.D/M> [json]",
@@ -11306,9 +11245,6 @@ void bgp_route_init(void)
 	install_element(VIEW_NODE, &show_ip_bgp_neighbor_routes_cmd);
 	install_element(VIEW_NODE,
 			&show_ip_bgp_neighbor_received_prefix_filter_cmd);
-#ifdef KEEP_OLD_VPN_COMMANDS
-	install_element(VIEW_NODE, &show_ip_bgp_vpn_all_route_prefix_cmd);
-#endif /* KEEP_OLD_VPN_COMMANDS */
 	install_element(VIEW_NODE, &show_bgp_afi_vpn_rd_route_cmd);
 	install_element(VIEW_NODE,
 			&show_ip_bgp_l2vpn_evpn_all_route_prefix_cmd);
@@ -11323,10 +11259,6 @@ void bgp_route_init(void)
 	/* prefix count */
 	install_element(ENABLE_NODE,
 			&show_ip_bgp_instance_neighbor_prefix_counts_cmd);
-#ifdef KEEP_OLD_VPN_COMMANDS
-	install_element(ENABLE_NODE,
-			&show_ip_bgp_vpn_neighbor_prefix_counts_cmd);
-#endif /* KEEP_OLD_VPN_COMMANDS */
 
 	/* New config IPv6 BGP commands.  */
 	install_element(BGP_IPV6_NODE, &bgp_table_map_cmd);
